@@ -552,47 +552,55 @@
 
     <script>
       // ===== CONFIG =====
-      const WEBHOOK_URL =
+      const WEBHOOK_GET_URL =
+        "https://kaza-score.app.n8n.cloud/webhook/get-tasks";
+      const WEBHOOK_POST_URL =
         "https://kaza-score.app.n8n.cloud/webhook/update-tasks";
 
-      // استخراج المعاملات من الـ URL
+      // استخراج التاريخ من الـ URL
       const params = new URLSearchParams(window.location.search);
       const meetingDate = params.get("date") || "";
-      const tasksParam = params.get("tasks") || "";
 
       // عرض تاريخ الاجتماع
       document.getElementById("meetingDateDisplay").textContent =
         meetingDate || "غير محدد";
 
-      // تحويل المهام من الـ URL
+      // جيب المهام من الـ Webhook
       let tasks = [];
-      try {
-        tasks = JSON.parse(decodeURIComponent(tasksParam));
-      } catch (e) {
-        // مهام تجريبية للعرض
-        tasks = [
-          {
-            task_name: "مراجعة التصميم",
-            responsible_person: "أحمد",
-            email: "ahmed@example.com",
-          },
-          {
-            task_name: "إعداد التقرير المالي",
-            responsible_person: "سارة",
-            email: "sara@example.com",
-          },
-        ];
+
+      async function loadTasks() {
+        try {
+          const res = await fetch(
+            `${WEBHOOK_GET_URL}?date=${encodeURIComponent(meetingDate)}`,
+          );
+          const data = await res.json();
+          // الداتا جاية كـ array من objects
+          tasks = data.map((item) => ({
+            task_name: item["Task Name"] || item.task_name || "",
+            responsible_person:
+              item["Responsible Person"] || item.responsible_person || "",
+            email: item["Email"] || item.email || "",
+          }));
+          buildForm();
+        } catch (err) {
+          document.getElementById("tasksContainer").innerHTML =
+            '<p style="color:var(--danger);text-align:center">حدث خطأ في تحميل المهام</p>';
+        }
       }
+
+      loadTasks();
 
       // بناء الفورم
       const container = document.getElementById("tasksContainer");
 
-      tasks.forEach((task, index) => {
-        const delay = (index * 0.1 + 0.2).toFixed(1);
-        const card = document.createElement("div");
-        card.className = "task-card";
-        card.style.animationDelay = `${delay}s`;
-        card.innerHTML = `
+      function buildForm() {
+        container.innerHTML = "";
+        tasks.forEach((task, index) => {
+          const delay = (index * 0.1 + 0.2).toFixed(1);
+          const card = document.createElement("div");
+          card.className = "task-card";
+          card.style.animationDelay = `${delay}s`;
+          card.innerHTML = `
       <div class="task-header">
         <div class="task-number">${index + 1}</div>
         <div class="task-info" style="flex:1">
@@ -635,28 +643,29 @@
         </div>
       </div>
     `;
-        container.appendChild(card);
+          container.appendChild(card);
 
-        // إظهار/إخفاء الحقول حسب الحالة
-        card
-          .querySelectorAll(`input[name="status_${index}"]`)
-          .forEach((radio) => {
-            radio.addEventListener("change", () => {
-              const extra = document.getElementById(`extra_${index}`);
-              const obstacleGroup = document.getElementById(
-                `obstacle_group_${index}`,
-              );
+          // إظهار/إخفاء الحقول حسب الحالة
+          card
+            .querySelectorAll(`input[name="status_${index}"]`)
+            .forEach((radio) => {
+              radio.addEventListener("change", () => {
+                const extra = document.getElementById(`extra_${index}`);
+                const obstacleGroup = document.getElementById(
+                  `obstacle_group_${index}`,
+                );
 
-              if (radio.value === "Done") {
-                extra.classList.remove("visible");
-              } else {
-                extra.classList.add("visible");
-                obstacleGroup.style.display =
-                  radio.value === "متوقفة" ? "block" : "none";
-              }
+                if (radio.value === "Done") {
+                  extra.classList.remove("visible");
+                } else {
+                  extra.classList.add("visible");
+                  obstacleGroup.style.display =
+                    radio.value === "متوقفة" ? "block" : "none";
+                }
+              });
             });
-          });
-      });
+        }); // end forEach
+      } // end buildForm
 
       // إرسال الفورم
       document
@@ -691,7 +700,7 @@
           });
 
           try {
-            await fetch(WEBHOOK_URL, {
+            await fetch(WEBHOOK_POST_URL, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ updates }),
