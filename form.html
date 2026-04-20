@@ -575,7 +575,7 @@
           );
           const data = await res.json();
           // الداتا جاية كـ array من objects
-          tasks = data.map((item) => ({
+          tasks = data[0].data.map((item) => ({
             task_name: item["Task Name"] || item.task_name || "",
             responsible_person:
               item["Responsible Person"] || item.responsible_person || "",
