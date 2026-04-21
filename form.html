@@ -692,7 +692,7 @@
           </div>
           <div class="status-pills">
             <span class="pill s-progress" id="pp-${i}" onclick="setStatus(event,${i},'قيد التنفيذ')">جارية</span>
-            <span class="pill"            id="pd-${i}" onclick="setStatus(event,${i},'Done')">✓ خلصت</span>
+            <span class="pill"            id="pd-${i}" onclick="setStatus(event,${i},'مكتملة')">✓ خلصت</span>
             <span class="pill"            id="pb-${i}" onclick="setStatus(event,${i},'متوقفة')">⛔ متوقفة</span>
           </div>
         </div>
@@ -728,7 +728,7 @@
         );
         const obsRow = document.getElementById(`obs-row-${i}`);
         const det = document.getElementById(`det-${i}`);
-        if (status === "Done") {
+        if (status === "مكتملة") {
           document.getElementById(`pd-${i}`).className = "pill s-done";
           det.classList.remove("open");
           obsRow.style.display = "none";
@@ -755,7 +755,7 @@
           meeting_date: selectedDate,
           status: states[i].status,
           progress:
-            states[i].status === "Done" ? "100" : String(states[i].progress),
+            states[i].status === "مكتملة" ? "100" : String(states[i].progress),
           obstacle: states[i].obstacle,
         }));
 
