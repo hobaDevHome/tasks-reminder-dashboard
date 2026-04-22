@@ -4,281 +4,344 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>تحديث المهام</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
     <style>
       :root {
-        --bg: #0d1117;
-        --surface: #161b22;
-        --surface2: #21262d;
-        --border: #30363d;
-        --accent: #2f81f7;
-        --done: #3fb950;
-        --warning: #d29922;
-        --danger: #f85149;
-        --text: #e6edf3;
-        --text-muted: #8b949e;
-        --text-dim: #6e7681;
+        --bg: #f0f2f8;
+        --surface: #ffffff;
+        --surface2: #f5f7fc;
+        --border: #e4e8f0;
+        --accent: #4361ee;
+        --accent-soft: #eef1fd;
+        --done: #10b981;
+        --done-soft: #ecfdf5;
+        --warning: #f59e0b;
+        --warning-soft: #fffbeb;
+        --danger: #ef4444;
+        --danger-soft: #fef2f2;
+        --text: #1e2746;
+        --text-muted: #6b7a99;
+        --text-dim: #9aa5be;
+        --shadow: 0 1px 3px rgba(30,39,70,0.06), 0 4px 16px rgba(30,39,70,0.07);
+        --shadow-sm: 0 1px 2px rgba(30,39,70,0.05), 0 2px 8px rgba(30,39,70,0.05);
+        --radius: 14px;
+        --radius-sm: 8px;
       }
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      .nav-btn {
-        padding: 0.3rem 0.8rem;
-        border-radius: 6px;
-        border: 1px solid var(--border);
-        background: var(--surface2);
-        color: var(--text-muted);
-        font-family: "Cairo", sans-serif;
-        font-size: 0.78rem;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-        transition: all 0.15s;
-      }
-      .nav-btn:hover {
-        border-color: var(--accent);
-        color: var(--text);
-      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
 
       body {
         font-family: "Cairo", sans-serif;
         background: var(--bg);
         color: var(--text);
         min-height: 100vh;
-        padding: 1.5rem 1rem 3rem;
       }
 
-      .container {
-        max-width: 680px;
-        margin: 0 auto;
+      /* ── Main ── */
+      .main {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
       }
 
-      /* Header */
-      .header {
+      /* ── Topbar ── */
+      .topbar {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0.8rem 1rem;
+        padding: 1rem 2rem;
         background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        margin-bottom: 1rem;
-      }
-      .header-title {
-        font-size: 0.95rem;
-        font-weight: 600;
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 50;
       }
 
-      .date-btn {
+      .topbar-left { display: flex; flex-direction: column; gap: 2px; }
+
+      .company-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        height: 36px;
+      }
+      .logo-icon {
+        width: 32px; height: 32px;
+        background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .logo-icon svg { width: 18px; height: 18px; fill: white; }
+      .logo-text {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--text);
+        letter-spacing: -0.02em;
+      }
+      .logo-text span { color: var(--accent); }
+
+      .breadcrumb {
         display: flex;
         align-items: center;
         gap: 0.4rem;
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+      .breadcrumb strong { color: var(--text); font-weight: 600; }
+      .breadcrumb-sep { color: var(--text-dim); font-size: 0.7rem; }
+
+      .topbar-right { display: flex; align-items: center; gap: 0.75rem; }
+
+      .dash-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.45rem 1rem;
         background: var(--surface2);
         border: 1px solid var(--border);
-        border-radius: 6px;
-        padding: 0.25rem 0.7rem;
-        cursor: pointer;
-        transition: border-color 0.15s;
+        border-radius: var(--radius-sm);
         color: var(--text-muted);
         font-family: "Cairo", sans-serif;
         font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.15s;
+        box-shadow: var(--shadow-sm);
       }
-      .date-btn:hover {
+      .dash-link:hover {
         border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-soft);
+      }
+
+      /* ── Page ── */
+      .page {
+        padding: 2rem;
+        flex: 1;
+        max-width: 780px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+      }
+
+      .page-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--text);
+        letter-spacing: -0.02em;
+      }
+      .page-subtitle {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-top: 0.2rem;
+      }
+
+      /* ── Date picker card ── */
+      .date-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 1rem;
+        overflow: hidden;
+      }
+
+      .date-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.9rem 1.2rem;
+        cursor: pointer;
+        transition: background 0.15s;
+        user-select: none;
+      }
+      .date-card-header:hover { background: var(--surface2); }
+
+      .date-card-label {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.88rem;
+        font-weight: 600;
         color: var(--text);
       }
-      .date-btn .icon {
+      .date-card-label .cal-icon {
+        width: 32px; height: 32px;
+        background: var(--accent-soft);
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--accent);
         font-size: 0.9rem;
       }
 
-      .local-badge {
-        display: inline-block;
-        background: rgba(210, 153, 34, 0.15);
-        border: 1px solid rgba(210, 153, 34, 0.4);
-        color: var(--warning);
-        font-size: 0.68rem;
-        padding: 0.12rem 0.45rem;
-        border-radius: 4px;
-        margin-left: 0.4rem;
-        vertical-align: middle;
+      .date-selected {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--accent);
+        background: var(--accent-soft);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
       }
+      .date-selected.placeholder { color: var(--text-dim); background: var(--surface2); }
 
-      /* Calendar dropdown */
-      .calendar-dropdown {
-        position: relative;
-        margin-bottom: 1rem;
+      .chevron {
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        transition: transform 0.2s;
       }
+      .chevron.open { transform: rotate(180deg); }
 
+      /* ── Calendar ── */
       .calendar-panel {
         display: none;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 0.9rem 1rem;
+        padding: 1rem 1.2rem 1.2rem;
+        border-top: 1px solid var(--border);
+        background: var(--surface2);
         animation: fadeDown 0.15s ease;
       }
-
-      .calendar-panel.open {
-        display: block;
-      }
+      .calendar-panel.open { display: block; }
 
       @keyframes fadeDown {
-        from {
-          opacity: 0;
-          transform: translateY(-6px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(-6px); }
+        to { opacity: 1; transform: translateY(0); }
       }
 
       .cal-nav {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 0.7rem;
+        margin-bottom: 0.8rem;
       }
 
       .cal-nav button {
-        background: var(--surface2);
+        background: var(--surface);
         border: 1px solid var(--border);
         color: var(--text-muted);
-        border-radius: 6px;
-        width: 28px;
-        height: 28px;
+        border-radius: 8px;
+        width: 30px; height: 30px;
         cursor: pointer;
-        font-size: 0.85rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition:
-          color 0.12s,
-          border-color 0.12s;
+        font-size: 0.9rem;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.12s;
       }
-      .cal-nav button:hover {
-        color: var(--text);
-        border-color: var(--accent);
-      }
+      .cal-nav button:hover { border-color: var(--accent); color: var(--accent); }
+
       .cal-month {
-        font-size: 0.88rem;
-        font-weight: 600;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text);
       }
 
       .cal-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 2px;
+        gap: 3px;
       }
 
       .cal-day-name {
         text-align: center;
-        font-size: 0.63rem;
+        font-size: 0.65rem;
+        font-weight: 600;
         color: var(--text-dim);
-        padding: 0.2rem 0;
+        padding: 0.25rem 0;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
       }
 
       .cal-day {
         text-align: center;
-        padding: 0.3rem 0;
-        font-size: 0.78rem;
-        border-radius: 6px;
+        padding: 0.35rem 0;
+        font-size: 0.8rem;
+        border-radius: 7px;
         cursor: pointer;
         color: var(--text-muted);
         transition: all 0.1s;
         border: 1px solid transparent;
+        font-weight: 500;
       }
-      .cal-day:hover:not(.empty):not(.selected) {
-        background: var(--surface2);
-        color: var(--text);
-      }
-      .cal-day.empty {
-        cursor: default;
-      }
-      .cal-day.selected {
-        background: var(--accent);
-        color: white;
-        font-weight: 600;
-      }
-      .cal-day.today:not(.selected) {
-        border-color: var(--accent);
-        color: var(--accent);
-      }
+      .cal-day:hover:not(.empty):not(.selected) { background: var(--surface); color: var(--text); }
+      .cal-day.empty { cursor: default; }
+      .cal-day.selected { background: var(--accent); color: white; font-weight: 700; border-color: var(--accent); }
+      .cal-day.today:not(.selected) { border-color: var(--accent); color: var(--accent); }
 
-      /* Tasks */
-      .tasks-list {
+      /* ── Tasks ── */
+      .tasks-wrap {
         display: flex;
         flex-direction: column;
-        gap: 0.4rem;
-        margin-bottom: 1rem;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
       }
 
-      .task-row {
+      .task-card {
         background: var(--surface);
         border: 1px solid var(--border);
-        border-radius: 8px;
+        border-radius: var(--radius);
         overflow: hidden;
-        transition: border-color 0.15s;
+        box-shadow: var(--shadow-sm);
+        transition: border-color 0.15s, box-shadow 0.15s;
       }
-      .task-row:hover {
-        border-color: rgba(47, 129, 247, 0.35);
-      }
+      .task-card:hover { border-color: rgba(67,97,238,0.3); box-shadow: var(--shadow); }
 
       .task-main {
         display: grid;
-        grid-template-columns: 22px 1fr auto;
+        grid-template-columns: 30px 1fr auto;
         align-items: center;
-        gap: 0.7rem;
-        padding: 0.65rem 0.9rem;
+        gap: 0.8rem;
+        padding: 0.85rem 1.1rem;
       }
 
       .task-num {
-        width: 22px;
-        height: 22px;
+        width: 28px; height: 28px;
         background: var(--surface2);
         border: 1px solid var(--border);
-        border-radius: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.67rem;
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 700;
         color: var(--text-dim);
         flex-shrink: 0;
       }
 
-      .task-info {
-        min-width: 0;
-        cursor: pointer;
-      }
+      .task-info { min-width: 0; cursor: pointer; }
+
       .task-name {
-        font-size: 0.86rem;
-        font-weight: 500;
+        font-size: 0.88rem;
+        font-weight: 600;
         color: var(--text);
         line-height: 1.35;
       }
+
       .task-person {
-        font-size: 0.71rem;
+        font-size: 0.72rem;
         color: var(--text-dim);
-        margin-top: 0.08rem;
+        margin-top: 0.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+      .task-person::before {
+        content: '';
+        display: inline-block;
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: var(--text-dim);
       }
 
-      .status-pills {
-        display: flex;
-        gap: 0.25rem;
-        flex-shrink: 0;
-      }
+      .status-pills { display: flex; gap: 0.3rem; flex-shrink: 0; }
 
       .pill {
-        padding: 0.18rem 0.55rem;
+        padding: 0.22rem 0.65rem;
         border-radius: 20px;
         border: 1px solid var(--border);
-        font-size: 0.69rem;
+        font-size: 0.7rem;
+        font-weight: 600;
         cursor: pointer;
         transition: all 0.12s;
         color: var(--text-dim);
@@ -286,284 +349,289 @@
         white-space: nowrap;
         user-select: none;
       }
-      .pill:hover {
-        border-color: #58a6ff;
-        color: var(--text);
-      }
-      .pill.s-done {
-        background: rgba(63, 185, 80, 0.12);
-        border-color: rgba(63, 185, 80, 0.5);
-        color: var(--done);
-      }
-      .pill.s-progress {
-        background: rgba(47, 129, 247, 0.12);
-        border-color: rgba(47, 129, 247, 0.5);
-        color: var(--accent);
-      }
-      .pill.s-blocked {
-        background: rgba(248, 81, 73, 0.12);
-        border-color: rgba(248, 81, 73, 0.5);
-        color: var(--danger);
-      }
+      .pill:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+      .pill.s-done { background: var(--done-soft); border-color: rgba(16,185,129,0.4); color: var(--done); }
+      .pill.s-progress { background: var(--accent-soft); border-color: rgba(67,97,238,0.4); color: var(--accent); }
+      .pill.s-blocked { background: var(--danger-soft); border-color: rgba(239,68,68,0.4); color: var(--danger); }
 
       .task-details {
         display: none;
         flex-direction: column;
-        gap: 0.6rem;
-        padding: 0.7rem 0.9rem;
+        gap: 0.75rem;
+        padding: 0.9rem 1.1rem;
         border-top: 1px solid var(--border);
+        background: var(--surface2);
       }
-      .task-details.open {
-        display: flex;
-      }
+      .task-details.open { display: flex; }
 
-      .detail-row {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-      }
+      .detail-row { display: flex; align-items: center; gap: 0.7rem; }
+
       .detail-label {
         font-size: 0.72rem;
-        color: var(--text-muted);
-        width: 65px;
+        font-weight: 600;
+        color: var(--text-dim);
+        width: 80px;
         flex-shrink: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
       }
-      .progress-wrap {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        flex: 1;
-      }
+
+      .progress-wrap { display: flex; align-items: center; gap: 0.6rem; flex: 1; }
 
       input[type="range"] {
         flex: 1;
         -webkit-appearance: none;
-        height: 4px;
+        height: 5px;
         border-radius: 100px;
         background: var(--border);
         outline: none;
         cursor: pointer;
+        transition: opacity 0.15s;
       }
+      input[type="range"]:hover { opacity: 0.9; }
       input[type="range"]::-webkit-slider-thumb {
         -webkit-appearance: none;
-        width: 13px;
-        height: 13px;
+        width: 15px; height: 15px;
         border-radius: 50%;
         background: var(--accent);
         cursor: pointer;
+        box-shadow: 0 1px 4px rgba(67,97,238,0.35);
       }
+
       .progress-num {
-        font-size: 0.74rem;
+        font-size: 0.78rem;
+        font-weight: 700;
         color: var(--accent);
-        width: 28px;
+        width: 35px;
         text-align: left;
       }
 
       textarea {
         flex: 1;
-        background: var(--surface2);
+        background: var(--surface);
         border: 1px solid var(--border);
-        border-radius: 6px;
-        padding: 0.45rem 0.65rem;
+        border-radius: var(--radius-sm);
+        padding: 0.55rem 0.8rem;
         color: var(--text);
         font-family: "Cairo", sans-serif;
-        font-size: 0.8rem;
+        font-size: 0.82rem;
         resize: none;
-        height: 52px;
+        height: 56px;
         outline: none;
         direction: rtl;
-        transition: border-color 0.15s;
+        transition: border-color 0.15s, box-shadow 0.15s;
       }
       textarea:focus {
         border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(67,97,238,0.12);
       }
-      textarea::placeholder {
-        color: var(--text-dim);
-      }
+      textarea::placeholder { color: var(--text-dim); }
 
+      /* ── Submit ── */
       .submit-btn {
         width: 100%;
-        padding: 0.72rem;
+        padding: 0.85rem;
         background: var(--accent);
         border: none;
-        border-radius: 8px;
+        border-radius: var(--radius-sm);
         color: white;
         font-family: "Cairo", sans-serif;
-        font-size: 0.9rem;
-        font-weight: 600;
+        font-size: 0.95rem;
+        font-weight: 700;
         cursor: pointer;
-        transition: opacity 0.15s;
+        transition: all 0.15s;
+        box-shadow: 0 2px 10px rgba(67,97,238,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
       }
-      .submit-btn:hover {
-        opacity: 0.88;
-      }
-      .submit-btn:disabled {
-        opacity: 0.45;
-        cursor: not-allowed;
-      }
+      .submit-btn:hover { background: #3451d1; box-shadow: 0 4px 14px rgba(67,97,238,0.4); }
+      .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
 
       .spinner {
         display: inline-block;
-        width: 13px;
-        height: 13px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
+        width: 14px; height: 14px;
+        border: 2px solid rgba(255,255,255,0.35);
         border-top-color: white;
         border-radius: 50%;
         animation: spin 0.7s linear infinite;
-        vertical-align: middle;
-        margin-right: 0.3rem;
       }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
+      @keyframes spin { to { transform: rotate(360deg); } }
 
+      /* ── Success ── */
       .success-screen {
         display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         text-align: center;
-        padding: 3rem 1rem;
-      }
-      .success-screen h2 {
-        font-size: 1.1rem;
-        color: var(--done);
-        margin-bottom: 0.3rem;
-      }
-      .success-screen p {
-        font-size: 0.84rem;
-        color: var(--text-muted);
+        padding: 4rem 1rem;
+        gap: 0.75rem;
       }
 
+      .success-icon {
+        width: 72px; height: 72px;
+        background: var(--done-soft);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      @keyframes popIn {
+        from { transform: scale(0); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+      }
+
+      .success-title { font-size: 1.25rem; font-weight: 800; color: var(--done); }
+      .success-sub { font-size: 0.85rem; color: var(--text-muted); }
+
+      .back-btn {
+        margin-top: 0.5rem;
+        padding: 0.55rem 1.5rem;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        color: var(--text-muted);
+        font-family: "Cairo", sans-serif;
+        font-size: 0.84rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.15s;
+      }
+      .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+      /* ── State messages ── */
       .state-msg {
         text-align: center;
-        padding: 2rem;
+        padding: 2.5rem;
         color: var(--text-muted);
-        font-size: 0.85rem;
+        font-size: 0.88rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
       }
-      .state-msg.error {
-        color: var(--danger);
-      }
-      .state-msg.empty {
-        color: var(--text-dim);
+      .state-msg.error { color: var(--danger); }
+      .state-msg.empty { color: var(--text-dim); }
+
+      @media (max-width: 768px) {
+        .page { padding: 1rem; }
+        .status-pills { flex-wrap: wrap; }
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="header">
-        <span class="header-title"> 📋 تحديث المهام </span>
-        <button class="date-btn" onclick="toggleCalendar()">
-          <span class="icon">📅</span>
-          <span id="dateLabel">اختر تاريخ</span>
-        </button>
-        <a href="Dashboard.html" class="nav-btn">📊 الداشبورد</a>
-      </div>
 
-      <!-- Calendar dropdown -->
-      <div class="calendar-dropdown">
-        <div class="calendar-panel" id="calPanel">
-          <div class="cal-nav">
-            <button onclick="changeMonth(-1)">‹</button>
-            <span class="cal-month" id="calMonth"></span>
-            <button onclick="changeMonth(1)">›</button>
+    <!-- Main -->
+    <div class="main">
+
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="company-logo">
+            <div class="logo-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <span class="logo-text">Quick<span>Score</span></span>
           </div>
-          <div class="cal-grid" id="calGrid"></div>
+          <div class="breadcrumb">
+            <a href="Dashboard.html" style="color:inherit;text-decoration:none;">الرئيسية</a>
+            <span class="breadcrumb-sep">›</span>
+            <strong>تحديث المهام</strong>
+          </div>
         </div>
-      </div>
-
-      <div id="formSection">
-        <div class="tasks-list" id="tasksContainer">
-          <div class="state-msg">اضغط على 📅 لاختيار تاريخ الاجتماع</div>
+        <div class="topbar-right">
+          <a href="Dashboard.html" class="dash-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            الداشبورد
+          </a>
         </div>
-        <button
-          class="submit-btn"
-          id="submitBtn"
-          onclick="handleSubmit()"
-          style="display: none"
-        >
-          حفظ التحديثات
-        </button>
-      </div>
+      </header>
 
-      <div class="success-screen" id="successScreen">
-        <div style="font-size: 2.5rem; margin-bottom: 0.8rem">✅</div>
-        <h2>تم الحفظ بنجاح!</h2>
-        <p>شكراً، تم تحديث حالة المهام</p>
+      <!-- Page -->
+      <div class="page">
+        <div class="page-header">
+          <div>
+            <div class="page-title">تحديث المهام</div>
+            <div class="page-subtitle">اختر تاريخ الاجتماع وحدّث حالة المهام</div>
+          </div>
+        </div>
+
+        <!-- Date Picker Card -->
+        <div class="date-card">
+          <div class="date-card-header" onclick="toggleCalendar()">
+            <div class="date-card-label">
+              <div class="cal-icon">📅</div>
+              تاريخ الاجتماع
+            </div>
+            <div style="display:flex;align-items:center;gap:0.6rem;">
+              <span class="date-selected placeholder" id="dateLabel">اختر تاريخاً</span>
+              <span class="chevron" id="chevron">▼</span>
+            </div>
+          </div>
+          <div class="calendar-panel" id="calPanel">
+            <div class="cal-nav">
+              <button onclick="changeMonth(-1)">‹</button>
+              <span class="cal-month" id="calMonth"></span>
+              <button onclick="changeMonth(1)">›</button>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+          </div>
+        </div>
+
+        <!-- Form Section -->
+        <div id="formSection">
+          <div class="tasks-wrap" id="tasksContainer">
+            <div class="state-msg">اضغط على تاريخ الاجتماع أعلاه للبدء</div>
+          </div>
+          <button class="submit-btn" id="submitBtn" onclick="handleSubmit()" style="display:none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            حفظ التحديثات
+          </button>
+        </div>
+
+        <!-- Success -->
+        <div class="success-screen" id="successScreen">
+          <div class="success-icon">✅</div>
+          <div class="success-title">تم الحفظ بنجاح!</div>
+          <div class="success-sub">شكراً، تم تحديث حالة جميع المهام</div>
+          <a href="Dashboard.html" class="back-btn">العودة إلى الداشبورد</a>
+        </div>
       </div>
     </div>
+
     <script>
-      const WEBHOOK_GET_URL =
-        "https://kaza-score.app.n8n.cloud/webhook/get-tasks";
-      const WEBHOOK_POST_URL =
-        "https://kaza-score.app.n8n.cloud/webhook/update-tasks";
+      const WEBHOOK_GET_URL = "https://kaza-score.app.n8n.cloud/webhook/get-tasks";
+      const WEBHOOK_POST_URL = "https://kaza-score.app.n8n.cloud/webhook/update-tasks";
 
       const DUMMY_DATA = {
         "21/04/2026": [
-          {
-            "Task Name": "مراجعة وتحديث ملف المتطلبات",
-            "Responsible Person": "أحمد",
-            "Email": "ahmed@test.com",
-          },
-          {
-            "Task Name": "تصميم واجهة صفحة الدخول",
-            "Responsible Person": "سارة",
-            "Email": "sara@test.com",
-          },
-          {
-            "Task Name": "إعداد بيئة الاختبار على السيرفر",
-            "Responsible Person": "محمد",
-            "Email": "mo@test.com",
-          },
-          {
-            "Task Name": "كتابة تقرير الأداء الشهري",
-            "Responsible Person": "دينا",
-            "Email": "dina@test.com",
-          },
+          { "Task Name": "مراجعة وتحديث ملف المتطلبات", "Responsible Person": "أحمد", "Email": "ahmed@test.com" },
+          { "Task Name": "تصميم واجهة صفحة الدخول", "Responsible Person": "سارة", "Email": "sara@test.com" },
+          { "Task Name": "إعداد بيئة الاختبار على السيرفر", "Responsible Person": "محمد", "Email": "mo@test.com" },
+          { "Task Name": "كتابة تقرير الأداء الشهري", "Responsible Person": "دينا", "Email": "dina@test.com" },
         ],
         "20/04/2026": [
-          {
-            "Task Name": "متابعة العملاء وتحديث قاعدة البيانات",
-            "Responsible Person": "كريم",
-            "Email": "karim@test.com",
-          },
-          {
-            "Task Name": "إعداد العرض التقديمي للإدارة",
-            "Responsible Person": "منى",
-            "Email": "mona@test.com",
-          },
+          { "Task Name": "متابعة العملاء وتحديث قاعدة البيانات", "Responsible Person": "كريم", "Email": "karim@test.com" },
+          { "Task Name": "إعداد العرض التقديمي للإدارة", "Responsible Person": "منى", "Email": "mona@test.com" },
         ],
       };
 
-      const isLocal =
-        ["localhost", "127.0.0.1", ""].includes(window.location.hostname) ||
-        window.location.protocol === "file:";
+      const isLocal = ["localhost", "127.0.0.1", ""].includes(window.location.hostname) || window.location.protocol === "file:";
 
-      if (isLocal)
-        document.getElementById("localBadge").style.display = "inline-block";
-
-      // ===== Calendar =====
-      const MONTHS_AR = [
-        "يناير",
-        "فبراير",
-        "مارس",
-        "أبريل",
-        "مايو",
-        "يونيو",
-        "يوليو",
-        "أغسطس",
-        "سبتمبر",
-        "أكتوبر",
-        "نوفمبر",
-        "ديسمبر",
-      ];
-      const DAYS_AR = ["أح", "إث", "ثل", "أر", "خم", "جم", "سب"];
+      // Calendar
+      const MONTHS_AR = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+      const DAYS_AR = ["أح","إث","ثل","أر","خم","جم","سب"];
 
       const now = new Date();
       let calYear = now.getFullYear();
       let calMonth = now.getMonth();
       let selectedDate = "";
+      let calOpen = false;
 
-      // لو في date في الـ URL
       const urlDate = new URLSearchParams(window.location.search).get("date");
       if (urlDate) {
         const parts = urlDate.split("/");
@@ -571,39 +639,39 @@
           calMonth = parseInt(parts[1]) - 1;
           calYear = parseInt(parts[2]);
           selectedDate = urlDate;
-          document.getElementById("dateLabel").textContent = urlDate;
+          const lbl = document.getElementById("dateLabel");
+          lbl.textContent = urlDate;
+          lbl.classList.remove("placeholder");
         }
       }
 
       function toggleCalendar() {
+        calOpen = !calOpen;
         const panel = document.getElementById("calPanel");
-        panel.classList.toggle("open");
-        if (panel.classList.contains("open")) renderCalendar();
+        const chevron = document.getElementById("chevron");
+        panel.classList.toggle("open", calOpen);
+        chevron.classList.toggle("open", calOpen);
+        if (calOpen) renderCalendar();
       }
 
       function renderCalendar() {
-        document.getElementById("calMonth").textContent =
-          `${MONTHS_AR[calMonth]} ${calYear}`;
+        document.getElementById("calMonth").textContent = `${MONTHS_AR[calMonth]} ${calYear}`;
         const grid = document.getElementById("calGrid");
         grid.innerHTML = "";
-
-        DAYS_AR.forEach((d) => {
+        DAYS_AR.forEach(d => {
           const el = document.createElement("div");
           el.className = "cal-day-name";
           el.textContent = d;
           grid.appendChild(el);
         });
-
         const firstDay = new Date(calYear, calMonth, 1).getDay();
         const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
         const todayStr = formatDate(now);
-
         for (let i = 0; i < firstDay; i++) {
           const el = document.createElement("div");
           el.className = "cal-day empty";
           grid.appendChild(el);
         }
-
         for (let d = 1; d <= daysInMonth; d++) {
           const dateStr = formatDate(new Date(calYear, calMonth, d));
           const el = document.createElement("div");
@@ -624,72 +692,65 @@
 
       function changeMonth(dir) {
         calMonth += dir;
-        if (calMonth > 11) {
-          calMonth = 0;
-          calYear++;
-        }
-        if (calMonth < 0) {
-          calMonth = 11;
-          calYear--;
-        }
+        if (calMonth > 11) { calMonth = 0; calYear++; }
+        if (calMonth < 0) { calMonth = 11; calYear--; }
         renderCalendar();
       }
 
       function selectDate(dateStr) {
         selectedDate = dateStr;
-        document.getElementById("dateLabel").textContent = dateStr;
+        const lbl = document.getElementById("dateLabel");
+        lbl.textContent = dateStr;
+        lbl.classList.remove("placeholder");
+        calOpen = false;
         document.getElementById("calPanel").classList.remove("open");
+        document.getElementById("chevron").classList.remove("open");
         loadTasks(dateStr);
       }
 
-      // ===== Tasks =====
+      // Tasks
       let tasks = [];
       let states = [];
 
       async function loadTasks(date) {
         const container = document.getElementById("tasksContainer");
         const submitBtn = document.getElementById("submitBtn");
-        container.innerHTML = '<div class="state-msg">جاري التحميل...</div>';
+        container.innerHTML = '<div class="state-msg">جاري تحميل المهام...</div>';
         submitBtn.style.display = "none";
 
         try {
           let raw;
           if (isLocal) {
-            await new Promise((r) => setTimeout(r, 300));
+            await new Promise(r => setTimeout(r, 300));
             raw = DUMMY_DATA[date] || [];
           } else {
-            const res = await fetch(
-              `${WEBHOOK_GET_URL}?date=${encodeURIComponent(date)}`,
-            );
+            const res = await fetch(`${WEBHOOK_GET_URL}?date=${encodeURIComponent(date)}`);
             const data = await res.json();
             raw = data[0]?.data || data || [];
           }
 
           if (!raw.length) {
-            container.innerHTML =
-              '<div class="state-msg empty">📭 لا توجد مهام لهذا التاريخ</div>';
+            container.innerHTML = '<div class="state-msg empty">📭 لا توجد مهام لهذا التاريخ</div>';
             return;
           }
 
-          tasks = raw.map((r) => ({
+          tasks = raw.map(r => ({
             task_name: r["Task Name"] || r.task_name || "",
-            responsible_person:
-              r["Responsible Person"] || r.responsible_person || "",
+            responsible_person: r["Responsible Person"] || r.responsible_person || "",
             email: r["Email"] || r.email || "",
             current_status: r["Status"] || "قيد التنفيذ",
             current_progress: +r["progress"] || 0,
             current_obstacle: r["obstacle"] || "",
           }));
-          states = tasks.map((t) => ({
+          states = tasks.map(t => ({
             status: t.current_status,
             progress: t.current_progress,
             obstacle: t.current_obstacle,
           }));
           buildForm();
-          submitBtn.style.display = "block";
+          submitBtn.style.display = "flex";
         } catch (e) {
-          container.innerHTML =
-            '<div class="state-msg error">حدث خطأ في تحميل المهام</div>';
+          container.innerHTML = '<div class="state-msg error">حدث خطأ في تحميل المهام</div>';
         }
       }
 
@@ -707,36 +768,36 @@
           const obsVal = states[i].obstacle;
 
           const div = document.createElement("div");
-          div.className = "task-row";
+          div.className = "task-card";
           div.innerHTML = `
-        <div class="task-main">
-          <div class="task-num">${i + 1}</div>
-          <div class="task-info" onclick="toggleDetails(${i})">
-            <div class="task-name">${t.task_name}</div>
-            <div class="task-person">👤 ${t.responsible_person}</div>
-          </div>
-          <div class="status-pills">
-            <span class="pill ${pp}" id="pp-${i}" onclick="setStatus(event,${i},'قيد التنفيذ')">جارية</span>
-            <span class="pill ${pd}" id="pd-${i}" onclick="setStatus(event,${i},'مكتملة')">✓ خلصت</span>
-            <span class="pill ${pb}" id="pb-${i}" onclick="setStatus(event,${i},'متوقفة')">⛔ متوقفة</span>
-          </div>
-        </div>
-        <div class="task-details ${detOpen}" id="det-${i}">
-          <div class="detail-row">
-            <span class="detail-label">نسبة الإنجاز</span>
-            <div class="progress-wrap">
-              <input type="range" min="0" max="100" value="${progVal}" id="prg-${i}"
-                oninput="document.getElementById('prn-${i}').textContent=this.value+'%';states[${i}].progress=+this.value">
-              <span class="progress-num" id="prn-${i}">${progVal}%</span>
+            <div class="task-main">
+              <div class="task-num">${i + 1}</div>
+              <div class="task-info" onclick="toggleDetails(${i})">
+                <div class="task-name">${t.task_name}</div>
+                <div class="task-person">${t.responsible_person}</div>
+              </div>
+              <div class="status-pills">
+                <span class="pill ${pp}" id="pp-${i}" onclick="setStatus(event,${i},'قيد التنفيذ')">جارية</span>
+                <span class="pill ${pd}" id="pd-${i}" onclick="setStatus(event,${i},'مكتملة')">✓ خلصت</span>
+                <span class="pill ${pb}" id="pb-${i}" onclick="setStatus(event,${i},'متوقفة')">⛔ متوقفة</span>
+              </div>
             </div>
-          </div>
-          <div class="detail-row" id="obs-row-${i}" style="display:${obsDisplay}">
-            <span class="detail-label">سبب التوقف</span>
-            <textarea id="obs-${i}" placeholder="اذكر سبب التوقف..."
-              oninput="states[${i}].obstacle=this.value">${obsVal}</textarea>
-          </div>
-        </div>
-      `;
+            <div class="task-details ${detOpen}" id="det-${i}">
+              <div class="detail-row">
+                <span class="detail-label">الإنجاز</span>
+                <div class="progress-wrap">
+                  <input type="range" min="0" max="100" value="${progVal}" id="prg-${i}"
+                    oninput="document.getElementById('prn-${i}').textContent=this.value+'%';states[${i}].progress=+this.value">
+                  <span class="progress-num" id="prn-${i}">${progVal}%</span>
+                </div>
+              </div>
+              <div class="detail-row" id="obs-row-${i}" style="display:${obsDisplay}">
+                <span class="detail-label">سبب التوقف</span>
+                <textarea id="obs-${i}" placeholder="اذكر سبب التوقف..."
+                  oninput="states[${i}].obstacle=this.value">${obsVal}</textarea>
+              </div>
+            </div>
+          `;
           c.appendChild(div);
         });
       }
@@ -748,9 +809,7 @@
       function setStatus(e, i, status) {
         e.stopPropagation();
         states[i].status = status;
-        ["pp", "pd", "pb"].forEach(
-          (p) => (document.getElementById(`${p}-${i}`).className = "pill"),
-        );
+        ["pp", "pd", "pb"].forEach(p => (document.getElementById(`${p}-${i}`).className = "pill"));
         const obsRow = document.getElementById(`obs-row-${i}`);
         const det = document.getElementById(`det-${i}`);
         if (status === "مكتملة") {
@@ -779,8 +838,7 @@
           email: t.email,
           meeting_date: selectedDate,
           status: states[i].status,
-          progress:
-            states[i].status === "مكتملة" ? "100" : String(states[i].progress),
+          progress: states[i].status === "مكتملة" ? "100" : String(states[i].progress),
           obstacle: states[i].obstacle,
         }));
 
@@ -793,18 +851,18 @@
             });
           } else {
             console.log("Local test — updates:", updates);
-            await new Promise((r) => setTimeout(r, 600));
+            await new Promise(r => setTimeout(r, 600));
           }
           document.getElementById("formSection").style.display = "none";
-          document.getElementById("successScreen").style.display = "block";
+          const ss = document.getElementById("successScreen");
+          ss.style.display = "flex";
         } catch (err) {
           btn.disabled = false;
-          btn.innerHTML = "حفظ التحديثات";
+          btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> حفظ التحديثات`;
           alert("حدث خطأ، يرجى المحاولة مرة أخرى");
         }
       }
 
-      // Init — لو في تاريخ في الـ URL حمل المهام تلقائي
       if (selectedDate) loadTasks(selectedDate);
     </script>
   </body>

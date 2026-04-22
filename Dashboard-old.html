@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>داشبورد المهام</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #21262d;
+        --border: #30363d;
+        --accent: #2f81f7;
+        --done: #3fb950;
+        --warning: #d29922;
+        --danger: #f85149;
+        --text: #e6edf3;
+        --text-muted: #8b949e;
+        --text-dim: #6e7681;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Cairo", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        padding: 1.5rem 1rem 3rem;
+      }
+
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+      }
+
+      /* Header */
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.9rem 1.2rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+      }
+
+      .header-title {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+
+      .header-links {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .nav-btn {
+        padding: 0.3rem 0.8rem;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--surface2);
+        color: var(--text-muted);
+        font-family: "Cairo", sans-serif;
+        font-size: 0.78rem;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.15s;
+      }
+      .nav-btn:hover {
+        border-color: var(--accent);
+        color: var(--text);
+      }
+
+      /* Filters */
+      .filters {
+        display: flex;
+        gap: 0.4rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      .filter-btn {
+        padding: 0.3rem 0.9rem;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: var(--surface2);
+        color: var(--text-muted);
+        font-family: "Cairo", sans-serif;
+        font-size: 0.78rem;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .filter-btn:hover {
+        border-color: var(--accent);
+        color: var(--text);
+      }
+      .filter-btn.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+      }
+
+      /* Stats cards */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem 1.1rem;
+      }
+
+      .stat-label {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        margin-bottom: 0.4rem;
+      }
+
+      .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 0.2rem;
+      }
+
+      .stat-sub {
+        font-size: 0.7rem;
+        color: var(--text-dim);
+      }
+
+      .stat-card.total .stat-value {
+        color: var(--text);
+      }
+      .stat-card.done .stat-value {
+        color: var(--done);
+      }
+      .stat-card.progress .stat-value {
+        color: var(--accent);
+      }
+      .stat-card.blocked .stat-value {
+        color: var(--danger);
+      }
+
+      /* Charts grid */
+      .charts-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .chart-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.1rem 1.2rem;
+      }
+
+      .chart-card.full {
+        grid-column: 1 / -1;
+      }
+
+      .chart-title {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .chart-wrap {
+        position: relative;
+        width: 100%;
+      }
+
+      /* Donut legend */
+      .donut-wrap {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .donut-chart {
+        position: relative;
+        width: 140px;
+        height: 140px;
+        flex-shrink: 0;
+      }
+
+      .legend {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex: 1;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.78rem;
+      }
+
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        flex-shrink: 0;
+      }
+
+      .legend-label {
+        color: var(--text-muted);
+        flex: 1;
+      }
+      .legend-value {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      /* Person progress */
+      .person-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+      }
+
+      .person-row {
+      }
+
+      .person-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.3rem;
+      }
+
+      .person-name {
+        font-size: 0.82rem;
+        font-weight: 500;
+      }
+      .person-stats {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+      }
+
+      .progress-bar-wrap {
+        background: var(--surface2);
+        border-radius: 100px;
+        height: 6px;
+        overflow: hidden;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        border-radius: 100px;
+        background: var(--accent);
+        transition: width 0.6s ease;
+      }
+
+      /* Obstacles table */
+      .obstacle-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .obstacle-item {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.6rem 0.8rem;
+        background: var(--surface2);
+        border-radius: 8px;
+        border: 1px solid var(--border);
+      }
+
+      .obstacle-task {
+        font-size: 0.82rem;
+        color: var(--text);
+      }
+      .obstacle-person {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+      .obstacle-reason {
+        font-size: 0.72rem;
+        color: var(--danger);
+        background: rgba(248, 81, 73, 0.1);
+        border: 1px solid rgba(248, 81, 73, 0.2);
+        border-radius: 4px;
+        padding: 0.15rem 0.5rem;
+        white-space: nowrap;
+      }
+
+      .empty-msg {
+        text-align: center;
+        padding: 1.5rem;
+        color: var(--text-dim);
+        font-size: 0.82rem;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 4rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 600px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .charts-grid {
+          grid-template-columns: 1fr;
+        }
+        .chart-card.full {
+          grid-column: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <span class="header-title">📊 داشبورد المهام</span>
+        <div class="header-links">
+          <a href="form.html" class="nav-btn">📋 تحديث المهام</a>
+        </div>
+      </div>
+
+      <div class="filters" id="filters">
+        <button class="filter-btn active" onclick="setFilter('all', this)">
+          كل الوقت
+        </button>
+        <button class="filter-btn" onclick="setFilter('week', this)">
+          آخر أسبوع
+        </button>
+        <button class="filter-btn" onclick="setFilter('month', this)">
+          آخر شهر
+        </button>
+      </div>
+
+      <div id="dashContent">
+        <div class="loading">جاري تحميل البيانات...</div>
+      </div>
+    </div>
+    <script>
+      const WEBHOOK_URL =
+        "https://kaza-score.app.n8n.cloud/webhook/get-dashboard";
+
+      let allTasks = [];
+      let filteredTasks = [];
+      let donutChart = null;
+      let barChart = null;
+
+      async function loadData() {
+        try {
+          const res = await fetch(WEBHOOK_URL);
+          const data = await res.json();
+          allTasks = data[0]?.data || data || [];
+          applyFilter("all");
+        } catch (e) {
+          document.getElementById("dashContent").innerHTML =
+            '<div class="loading" style="color:var(--danger)">حدث خطأ في تحميل البيانات</div>';
+        }
+      }
+
+      function parseDate(str) {
+        if (!str) return null;
+        const [d, m, y] = str.split("/");
+        return new Date(+y, +m - 1, +d);
+      }
+
+      function setFilter(type, btn) {
+        document
+          .querySelectorAll(".filter-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        applyFilter(type);
+      }
+
+      function applyFilter(type) {
+        const now = new Date();
+        if (type === "all") {
+          filteredTasks = allTasks;
+        } else if (type === "week") {
+          const cutoff = new Date(now - 7 * 86400000);
+          filteredTasks = allTasks.filter((t) => {
+            const d = parseDate(t["Meeting Date"]);
+            return d && d >= cutoff;
+          });
+        } else if (type === "month") {
+          const cutoff = new Date(now - 30 * 86400000);
+          filteredTasks = allTasks.filter((t) => {
+            const d = parseDate(t["Meeting Date"]);
+            return d && d >= cutoff;
+          });
+        }
+        renderDash();
+      }
+
+      function renderDash() {
+        const tasks = filteredTasks;
+        const total = tasks.length;
+        const done = tasks.filter((t) => t["Status"] === "مكتملة").length;
+        const inprog = tasks.filter(
+          (t) => t["Status"] === "قيد التنفيذ",
+        ).length;
+        const blocked = tasks.filter((t) => t["Status"] === "متوقفة").length;
+        const pending = tasks.filter((t) => t["Status"] === "للتنفيذ").length;
+        const avgProg = total
+          ? Math.round(
+              tasks.reduce((s, t) => s + (+t["progress"] || 0), 0) / total,
+            )
+          : 0;
+
+        // Person stats
+        const personMap = {};
+        tasks.forEach((t) => {
+          const p = t["Responsible Person"];
+          if (!personMap[p]) personMap[p] = { total: 0, done: 0, progress: [] };
+          personMap[p].total++;
+          if (t["Status"] === "مكتملة") personMap[p].done++;
+          personMap[p].progress.push(+t["progress"] || 0);
+        });
+
+        const persons = Object.entries(personMap)
+          .map(([name, s]) => ({
+            name,
+            total: s.total,
+            done: s.done,
+            avgProgress: Math.round(
+              s.progress.reduce((a, b) => a + b, 0) / s.progress.length,
+            ),
+          }))
+          .sort((a, b) => b.done - a.done);
+
+        // Obstacles
+        const obstacles = tasks.filter(
+          (t) => t["Status"] === "متوقفة" && t["obstacle"],
+        );
+
+        document.getElementById("dashContent").innerHTML = `
+      <div class="stats-grid">
+        <div class="stat-card total">
+          <div class="stat-label">إجمالي المهام</div>
+          <div class="stat-value">${total}</div>
+          <div class="stat-sub">متوسط الإنجاز ${avgProg}%</div>
+        </div>
+        <div class="stat-card done">
+          <div class="stat-label">مكتملة</div>
+          <div class="stat-value">${done}</div>
+          <div class="stat-sub">${total ? Math.round((done / total) * 100) : 0}% من الإجمالي</div>
+        </div>
+        <div class="stat-card progress">
+          <div class="stat-label">قيد التنفيذ</div>
+          <div class="stat-value">${inprog}</div>
+          <div class="stat-sub">${total ? Math.round((inprog / total) * 100) : 0}% من الإجمالي</div>
+        </div>
+        <div class="stat-card blocked">
+          <div class="stat-label">متوقفة</div>
+          <div class="stat-value">${blocked}</div>
+          <div class="stat-sub">${total ? Math.round((blocked / total) * 100) : 0}% من الإجمالي</div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">توزيع الحالات</div>
+          <div class="donut-wrap">
+            <div class="donut-chart">
+              <canvas id="donutChart" role="img" aria-label="توزيع حالات المهام">إجمالي ${total} مهمة</canvas>
+            </div>
+            <div class="legend">
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#3fb950"></div>
+                <span class="legend-label">مكتملة</span>
+                <span class="legend-value">${done}</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#2f81f7"></div>
+                <span class="legend-label">قيد التنفيذ</span>
+                <span class="legend-value">${inprog}</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#f85149"></div>
+                <span class="legend-label">متوقفة</span>
+                <span class="legend-value">${blocked}</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#8b949e"></div>
+                <span class="legend-label">للتنفيذ</span>
+                <span class="legend-value">${pending}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-title">إنجاز الأفراد</div>
+          <div class="person-list" id="personList"></div>
+        </div>
+
+        <div class="chart-card full">
+          <div class="chart-title">نسبة إنجاز كل شخص</div>
+          <div class="chart-wrap" style="height:${Math.max(persons.length * 44 + 60, 200)}px">
+            <canvas id="barChart" role="img" aria-label="نسبة إنجاز الأفراد">بيانات إنجاز الأفراد</canvas>
+          </div>
+        </div>
+
+        <div class="chart-card full">
+          <div class="chart-title">المهام المتوقفة وأسباب العرقلة</div>
+          <div id="obstacleList"></div>
+        </div>
+      </div>
+    `;
+
+        // Donut chart
+        if (donutChart) donutChart.destroy();
+        donutChart = new Chart(document.getElementById("donutChart"), {
+          type: "doughnut",
+          data: {
+            labels: ["مكتملة", "قيد التنفيذ", "متوقفة", "للتنفيذ"],
+            datasets: [
+              {
+                data: [done, inprog, blocked, pending],
+                backgroundColor: ["#3fb950", "#2f81f7", "#f85149", "#8b949e"],
+                borderWidth: 0,
+                hoverOffset: 4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "72%",
+            plugins: { legend: { display: false }, tooltip: { rtl: true } },
+          },
+        });
+
+        // Person progress bars
+        const pList = document.getElementById("personList");
+        if (!persons.length) {
+          pList.innerHTML = '<div class="empty-msg">لا توجد بيانات</div>';
+        } else {
+          pList.innerHTML = persons
+            .map(
+              (p) => `
+        <div class="person-row">
+          <div class="person-header">
+            <span class="person-name">${p.name}</span>
+            <span class="person-stats">${p.done}/${p.total} مكتملة · ${p.avgProgress}% إنجاز</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" style="width:${p.total ? Math.round((p.done / p.total) * 100) : 0}%;background:${p.done === p.total ? "#3fb950" : "#2f81f7"}"></div>
+          </div>
+        </div>
+      `,
+            )
+            .join("");
+        }
+
+        // Bar chart
+        if (barChart) barChart.destroy();
+        barChart = new Chart(document.getElementById("barChart"), {
+          type: "bar",
+          data: {
+            labels: persons.map((p) => p.name),
+            datasets: [
+              {
+                label: "نسبة الإنجاز %",
+                data: persons.map((p) => p.avgProgress),
+                backgroundColor: persons.map((p) =>
+                  p.avgProgress === 100
+                    ? "#3fb950"
+                    : p.avgProgress > 50
+                      ? "#2f81f7"
+                      : "#d29922",
+                ),
+                borderRadius: 6,
+                borderSkipped: false,
+              },
+            ],
+          },
+          options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { rtl: true } },
+            scales: {
+              x: {
+                min: 0,
+                max: 100,
+                ticks: { color: "#8b949e", callback: (v) => v + "%" },
+                grid: { color: "#30363d" },
+              },
+              y: {
+                ticks: {
+                  color: "#e6edf3",
+                  font: { family: "Cairo", size: 12 },
+                },
+                grid: { display: false },
+              },
+            },
+          },
+        });
+
+        // Obstacles
+        const oList = document.getElementById("obstacleList");
+        const blocked_tasks = tasks.filter((t) => t["Status"] === "متوقفة");
+        if (!blocked_tasks.length) {
+          oList.innerHTML =
+            '<div class="empty-msg">✅ لا توجد مهام متوقفة</div>';
+        } else {
+          oList.innerHTML = `<div class="obstacle-list">${blocked_tasks
+            .map(
+              (t) => `
+        <div class="obstacle-item">
+          <span class="obstacle-task">${t["Task Name"]}</span>
+          <span class="obstacle-person">👤 ${t["Responsible Person"]}</span>
+          <span class="obstacle-reason">${t["obstacle"] || "لم يذكر سبب"}</span>
+        </div>
+      `,
+            )
+            .join("")}</div>`;
+        }
+      }
+
+      loadData();
+    </script>
+  </body>
+</html>
