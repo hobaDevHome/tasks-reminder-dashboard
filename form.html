@@ -275,26 +275,31 @@
       .tasks-wrap {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.3rem;
         margin-bottom: 1.25rem;
       }
 
+      /* ── Task cards — single row ── */
       .task-card {
         background: var(--surface);
         border: 1px solid var(--border);
+        border-right: 3px solid var(--border);
         border-radius: var(--radius-sm);
-        overflow: hidden;
+        overflow: visible;
         box-shadow: var(--shadow-sm);
         transition: border-color 0.15s, box-shadow 0.15s;
       }
-      .task-card:hover { border-color: rgba(67,97,238,0.3); }
+      .task-card:hover { box-shadow: var(--shadow); }
+      .task-card.status-done   { border-right-color: var(--done); }
+      .task-card.status-prog   { border-right-color: var(--accent); }
+      .task-card.status-blocked{ border-right-color: var(--danger); }
 
-      .task-main {
+      .task-row {
         display: grid;
-        grid-template-columns: 22px 1fr auto;
+        grid-template-columns: 22px 1fr 160px 90px;
         align-items: center;
-        gap: 0.6rem;
-        padding: 0.55rem 0.85rem;
+        gap: 0.75rem;
+        padding: 0.55rem 0.9rem;
       }
 
       .task-num {
@@ -309,120 +314,117 @@
         flex-shrink: 0;
       }
 
-      .task-info { min-width: 0; cursor: pointer; }
-
+      .task-info { min-width: 0; }
       .task-name {
         font-size: 0.82rem;
         font-weight: 600;
         color: var(--text);
-        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
-
       .task-person {
         font-size: 0.67rem;
         color: var(--text-dim);
         margin-top: 0.05rem;
+      }
+
+      /* Progress inline */
+      .prog-cell {
         display: flex;
         align-items: center;
-        gap: 0.25rem;
+        gap: 0.5rem;
       }
-      .task-person::before {
-        content: '';
-        display: inline-block;
-        width: 5px; height: 5px;
-        border-radius: 50%;
-        background: var(--text-dim);
-      }
-
-      .status-pills { display: flex; gap: 0.25rem; flex-shrink: 0; }
-
-      .pill {
-        padding: 0.14rem 0.5rem;
-        border-radius: 20px;
-        border: 1px solid var(--border);
-        font-size: 0.67rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.12s;
-        color: var(--text-dim);
-        background: var(--surface2);
-        white-space: nowrap;
-        user-select: none;
-      }
-      .pill:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
-      .pill.s-done { background: var(--done-soft); border-color: rgba(16,185,129,0.4); color: var(--done); }
-      .pill.s-progress { background: var(--accent-soft); border-color: rgba(67,97,238,0.4); color: var(--accent); }
-      .pill.s-blocked { background: var(--danger-soft); border-color: rgba(239,68,68,0.4); color: var(--danger); }
-
-      .task-details {
-        display: none;
-        flex-direction: column;
-        gap: 0.45rem;
-        padding: 0.55rem 0.85rem;
-        border-top: 1px solid var(--border);
-        background: var(--surface2);
-      }
-      .task-details.open { display: flex; }
-
-      .detail-row { display: flex; align-items: center; gap: 0.6rem; }
-
-      .detail-label {
-        font-size: 0.65rem;
-        font-weight: 600;
-        color: var(--text-dim);
-        width: 68px;
-        flex-shrink: 0;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-
-      .progress-wrap { display: flex; align-items: center; gap: 0.5rem; flex: 1; }
-
-      input[type="range"] {
+      .prog-bar-bg {
         flex: 1;
-        -webkit-appearance: none;
-        height: 4px;
-        border-radius: 100px;
+        height: 5px;
         background: var(--border);
-        outline: none;
-        cursor: pointer;
+        border-radius: 100px;
+        overflow: hidden;
       }
-      input[type="range"]::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        width: 13px; height: 13px;
-        border-radius: 50%;
+      .prog-bar-fill {
+        height: 100%;
+        border-radius: 100px;
         background: var(--accent);
-        cursor: pointer;
-        box-shadow: 0 1px 4px rgba(67,97,238,0.3);
+        transition: width 0.3s ease;
       }
-
-      .progress-num {
+      .prog-input {
+        width: 48px;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        background: var(--surface2);
+        color: var(--accent);
+        font-family: "Cairo", sans-serif;
         font-size: 0.7rem;
         font-weight: 700;
-        color: var(--accent);
-        width: 30px;
-        text-align: left;
+        text-align: center;
+        padding: 0.1rem 0.25rem;
+        outline: none;
+        transition: border-color 0.15s;
       }
+      .prog-input:focus { border-color: var(--accent); }
 
+      /* Status dropdown */
+      .status-select {
+        width: 100%;
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--surface2);
+        color: var(--text-muted);
+        font-family: "Cairo", sans-serif;
+        font-size: 0.72rem;
+        font-weight: 600;
+        cursor: pointer;
+        outline: none;
+        transition: all 0.15s;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239aa5be'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: left 0.5rem center;
+        padding-left: 1.5rem;
+      }
+      .status-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+      .status-select.s-done    { background-color: var(--done-soft); border-color: rgba(16,185,129,0.45); color: var(--done); }
+      .status-select.s-progress{ background-color: var(--accent-soft); border-color: rgba(67,97,238,0.45); color: var(--accent); }
+      .status-select.s-blocked { background-color: var(--danger-soft); border-color: rgba(239,68,68,0.45); color: var(--danger); }
+
+      /* Obstacle row — shown below when blocked */
+      .obstacle-row {
+        display: none;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.45rem 0.9rem 0.5rem;
+        border-top: 1px solid var(--border);
+        background: var(--danger-soft);
+      }
+      .obstacle-row.open { display: flex; }
+      .obs-label {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--danger);
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        flex-shrink: 0;
+      }
       textarea {
         flex: 1;
         background: var(--surface);
-        border: 1px solid var(--border);
+        border: 1px solid rgba(239,68,68,0.25);
         border-radius: 6px;
-        padding: 0.35rem 0.6rem;
+        padding: 0.3rem 0.6rem;
         color: var(--text);
         font-family: "Cairo", sans-serif;
-        font-size: 0.78rem;
+        font-size: 0.77rem;
         resize: none;
-        height: 44px;
+        height: 38px;
         outline: none;
         direction: rtl;
-        transition: border-color 0.15s, box-shadow 0.15s;
+        transition: border-color 0.15s;
       }
-      textarea:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px rgba(67,97,238,0.1);
-      }
+      textarea:focus { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(239,68,68,0.1); }
       textarea::placeholder { color: var(--text-dim); }
 
       /* ── Submit ── */
@@ -750,72 +752,66 @@
         c.innerHTML = "";
         tasks.forEach((t, i) => {
           const s = states[i].status;
-          const pp = s === "قيد التنفيذ" ? "s-progress" : "";
-          const pd = s === "مكتملة" ? "s-done" : "";
-          const pb = s === "متوقفة" ? "s-blocked" : "";
-          const detOpen = s !== "مكتملة" ? "open" : "";
-          const obsDisplay = s === "متوقفة" ? "flex" : "none";
           const progVal = states[i].progress;
           const obsVal = states[i].obstacle;
+          const cardClass = s === "مكتملة" ? "status-done" : s === "قيد التنفيذ" ? "status-prog" : s === "متوقفة" ? "status-blocked" : "";
+          const selClass = s === "مكتملة" ? "s-done" : s === "قيد التنفيذ" ? "s-progress" : s === "متوقفة" ? "s-blocked" : "";
+          const obsOpen = s === "متوقفة" ? "open" : "";
 
           const div = document.createElement("div");
-          div.className = "task-card";
+          div.className = `task-card ${cardClass}`;
+          div.id = `card-${i}`;
           div.innerHTML = `
-            <div class="task-main">
+            <div class="task-row">
               <div class="task-num">${i + 1}</div>
-              <div class="task-info" onclick="toggleDetails(${i})">
-                <div class="task-name">${t.task_name}</div>
+              <div class="task-info">
+                <div class="task-name" title="${t.task_name}">${t.task_name}</div>
                 <div class="task-person">${t.responsible_person}</div>
               </div>
-              <div class="status-pills">
-                <span class="pill ${pp}" id="pp-${i}" onclick="setStatus(event,${i},'قيد التنفيذ')">جارية</span>
-                <span class="pill ${pd}" id="pd-${i}" onclick="setStatus(event,${i},'مكتملة')">✓ خلصت</span>
-                <span class="pill ${pb}" id="pb-${i}" onclick="setStatus(event,${i},'متوقفة')">⛔ متوقفة</span>
-              </div>
-            </div>
-            <div class="task-details ${detOpen}" id="det-${i}">
-              <div class="detail-row">
-                <span class="detail-label">الإنجاز</span>
-                <div class="progress-wrap">
-                  <input type="range" min="0" max="100" value="${progVal}" id="prg-${i}"
-                    oninput="document.getElementById('prn-${i}').textContent=this.value+'%';states[${i}].progress=+this.value">
-                  <span class="progress-num" id="prn-${i}">${progVal}%</span>
+              <div class="prog-cell">
+                <div class="prog-bar-bg">
+                  <div class="prog-bar-fill" id="bar-${i}" style="width:${progVal}%"></div>
                 </div>
+                <input class="prog-input" type="number" min="0" max="100" value="${progVal}" id="prg-${i}"
+                  oninput="updateProgress(${i}, this.value)">
               </div>
-              <div class="detail-row" id="obs-row-${i}" style="display:${obsDisplay}">
-                <span class="detail-label">سبب التوقف</span>
-                <textarea id="obs-${i}" placeholder="اذكر سبب التوقف..."
-                  oninput="states[${i}].obstacle=this.value">${obsVal}</textarea>
-              </div>
+              <select class="status-select ${selClass}" id="sel-${i}" onchange="setStatus(${i}, this.value)">
+                <option value="قيد التنفيذ" ${s==="قيد التنفيذ"?"selected":""}>جارية</option>
+                <option value="مكتملة"      ${s==="مكتملة"?"selected":""}>✓ مكتملة</option>
+                <option value="متوقفة"      ${s==="متوقفة"?"selected":""}>⛔ متوقفة</option>
+              </select>
+            </div>
+            <div class="obstacle-row ${obsOpen}" id="obs-row-${i}">
+              <span class="obs-label">سبب التوقف</span>
+              <textarea id="obs-${i}" placeholder="اذكر سبب التوقف..."
+                oninput="states[${i}].obstacle=this.value">${obsVal}</textarea>
             </div>
           `;
           c.appendChild(div);
         });
       }
 
-      function toggleDetails(i) {
-        document.getElementById(`det-${i}`).classList.toggle("open");
+      function updateProgress(i, val) {
+        const v = Math.min(100, Math.max(0, +val || 0));
+        states[i].progress = v;
+        document.getElementById(`bar-${i}`).style.width = v + "%";
       }
 
-      function setStatus(e, i, status) {
-        e.stopPropagation();
+      function setStatus(i, status) {
         states[i].status = status;
-        ["pp", "pd", "pb"].forEach(p => (document.getElementById(`${p}-${i}`).className = "pill"));
+        const sel = document.getElementById(`sel-${i}`);
+        const card = document.getElementById(`card-${i}`);
         const obsRow = document.getElementById(`obs-row-${i}`);
-        const det = document.getElementById(`det-${i}`);
+        sel.className = "status-select " + (status === "مكتملة" ? "s-done" : status === "قيد التنفيذ" ? "s-progress" : "s-blocked");
+        card.className = "task-card " + (status === "مكتملة" ? "status-done" : status === "قيد التنفيذ" ? "status-prog" : "status-blocked");
         if (status === "مكتملة") {
-          document.getElementById(`pd-${i}`).className = "pill s-done";
-          det.classList.remove("open");
-          obsRow.style.display = "none";
-        } else if (status === "قيد التنفيذ") {
-          document.getElementById(`pp-${i}`).className = "pill s-progress";
-          det.classList.add("open");
-          obsRow.style.display = "none";
-        } else {
-          document.getElementById(`pb-${i}`).className = "pill s-blocked";
-          det.classList.add("open");
-          obsRow.style.display = "flex";
+          states[i].progress = 100;
+          const inp = document.getElementById(`prg-${i}`);
+          if (inp) inp.value = 100;
+          const bar = document.getElementById(`bar-${i}`);
+          if (bar) bar.style.width = "100%";
         }
+        obsRow.classList.toggle("open", status === "متوقفة");
       }
 
       async function handleSubmit() {
