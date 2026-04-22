@@ -28,6 +28,23 @@
         padding: 0;
         box-sizing: border-box;
       }
+      .nav-btn {
+        padding: 0.3rem 0.8rem;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--surface2);
+        color: var(--text-muted);
+        font-family: "Cairo", sans-serif;
+        font-size: 0.78rem;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.15s;
+      }
+      .nav-btn:hover {
+        border-color: var(--accent);
+        color: var(--text);
+      }
 
       body {
         font-family: "Cairo", sans-serif;
@@ -434,16 +451,12 @@
   <body>
     <div class="container">
       <div class="header">
-        <span class="header-title">
-          📋 تحديث المهام
-          <span id="localBadge" class="local-badge" style="display: none"
-            >تيست لوكالي</span
-          >
-        </span>
+        <span class="header-title"> 📋 تحديث المهام </span>
         <button class="date-btn" onclick="toggleCalendar()">
           <span class="icon">📅</span>
           <span id="dateLabel">اختر تاريخ</span>
         </button>
+        <a href="Dashboard.html" class="nav-btn">📊 الداشبورد</a>
       </div>
 
       <!-- Calendar dropdown -->
